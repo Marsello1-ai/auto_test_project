@@ -6,6 +6,7 @@ from endpoint.get_one_meme import MethodGetOneMeme
 from endpoint.post_authorize import MethodPostAuthorize
 from endpoint.post_meme import MethodPostMeme
 from endpoint.put_meme import MethodPutMeme
+from utils.token_manager import TokenManager
 
 
 @pytest.fixture()
@@ -43,23 +44,26 @@ def put_meme():
     return MethodPutMeme()
 
 
-@pytest.fixture()
-def basic_authorize_method(post_authorize):
-    return post_authorize.post_authorize()
+@pytest.fixture(scope="session")
+def token_manager():
+    return TokenManager()
 
 
 @pytest.fixture()
-def basic_created_mem(basic_authorize_method, post_meme):
-    token_id = basic_authorize_method
+def get_valid_token(token_manager):
+    return token_manager.get_valid_token()
+
+
+@pytest.fixture()
+def basic_created_mem(get_valid_token, post_meme):
+    token_id = get_valid_token
     meme_id = post_meme.post_meme(token_id)
     return meme_id, token_id
 
 
 @pytest.fixture()
-def created_and_del_mem(basic_authorize_method, post_meme, delete_mem):
-    token_id = basic_authorize_method
+def created_and_del_mem(get_valid_token, post_meme, delete_mem):
+    token_id = get_valid_token
     meme_id = post_meme.post_meme(token_id)
     yield meme_id, token_id
     delete_mem.delete_mem(meme_id, token_id)
-
-

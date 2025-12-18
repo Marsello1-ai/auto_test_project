@@ -4,15 +4,22 @@ from endpoint.main_endpoint import MainEndpoint
 
 class MethodPostAuthorize(MainEndpoint):
     token_id = None
+    user_name = None
 
-    def post_authorize(self):
+    def post_authorize(self, name):
         payload = {
-            "name": "Mars"
+            "name": name
         }
+
         self.response = requests.post(f'{self.url}authorize', json=payload, headers=self.headers)
-        self.token_id = self.response.json()["token"]
+        if self.response.status_code == 200:
+            self.token_id = self.response.json()["token"]
+            return self.token_id
+            # Для 400 ничего не парсим, просто возвращаем None
+        return None
 
-        return self.token_id
+    def check_user_name(self, name):
+        assert self.response.json()['user'] == name
 
-
-
+    def check_negative_status_code(self):
+        assert self.response.status_code == 400
