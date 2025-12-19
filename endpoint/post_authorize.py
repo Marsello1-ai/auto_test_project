@@ -20,6 +20,3 @@ class MethodPostAuthorize(MainEndpoint):
 
     def check_user_name(self, name):
         assert self.response.json()['user'] == name
-
-    def check_negative_status_code(self):
-        assert self.response.status_code == 400

@@ -33,9 +33,3 @@ class MethodDeleteMem(MainEndpoint):
         )
 
         return self.response.status_code
-
-    def check_negative_status_code_is_400(self):
-        assert self.response.status_code == 404
-
-    def check_negative_status_code_is_401(self):
-        assert self.response.status_code == 401
