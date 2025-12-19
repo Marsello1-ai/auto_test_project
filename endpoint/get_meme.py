@@ -9,3 +9,9 @@ class MethodGetMeme(MainEndpoint):
         self.response = requests.get(f'{self.url}meme', headers=headers)
 
         return self.response
+
+    def get_meme_negative_authorize(self):
+        headers = {'Content-Type': 'application/json', 'Authorization': None}
+        self.response = requests.get(f'{self.url}meme', headers=headers)
+
+        return self.response

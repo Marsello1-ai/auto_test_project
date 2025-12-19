@@ -57,13 +57,13 @@ def get_valid_token(token_manager):
 @pytest.fixture()
 def basic_created_mem(get_valid_token, post_meme):
     token_id = get_valid_token
-    meme_id = post_meme.post_meme(token_id)
+    meme_id = post_meme.post_meme_for_fixture(token_id)
     return meme_id, token_id
 
 
 @pytest.fixture()
 def created_and_del_mem(get_valid_token, post_meme, delete_mem):
     token_id = get_valid_token
-    meme_id = post_meme.post_meme(token_id)
+    meme_id = post_meme.post_meme_for_fixture(token_id)
     yield meme_id, token_id
     delete_mem.delete_mem(meme_id, token_id)
