@@ -10,8 +10,7 @@ class MethodGetMeme(MainEndpoint):
 
         return self.response
 
-    def get_meme_negative_authorize(self):
-        headers = {'Content-Type': 'application/json', 'Authorization': None}
-        self.response = requests.get(f'{self.url}meme', headers=headers)
-
-        return self.response
+    def check_meme_list_not_empty(self):
+        body = self.response.json()
+        assert isinstance(body, list)
+        assert len(body) > 0

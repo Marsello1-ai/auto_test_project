@@ -23,13 +23,3 @@ class MethodDeleteMem(MainEndpoint):
         )
 
         return self.response.status_code
-
-    def delete_mem_negative_authorize(self, meme_id):
-        headers = {'Content-Type': 'application/json', 'Authorization': None}
-
-        self.response = requests.delete(
-            f'{self.url}meme/{meme_id}',
-            headers=headers
-        )
-
-        return self.response.status_code
