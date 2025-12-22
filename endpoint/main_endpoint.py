@@ -18,3 +18,6 @@ class MainEndpoint:
 
     def check_negative_status_code_is_404(self):
         assert self.response.status_code == 404
+
+    def check_negative_status_code_is_405(self):
+        assert self.response.status_code == 405

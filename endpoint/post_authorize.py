@@ -20,3 +20,8 @@ class MethodPostAuthorize(MainEndpoint):
 
     def check_user_name(self, name):
         assert self.response.json()['user'] == name
+
+    def check_authorize_token(self):
+        body = self.response.json()
+        assert "token" in body
+        assert body['token'] == self.token_id
