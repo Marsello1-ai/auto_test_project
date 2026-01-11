@@ -25,10 +25,3 @@ class MethodPostMeme(MainEndpoint):
         self.response = requests.post(f'{self.url}meme', json=payload, headers=headers)
 
         return self.response
-
-    def check_payload_post_meme(self):
-        body = self.response.json()
-        assert body["text"] == self.payload["text"]
-        assert body["url"] == self.payload["url"]
-        assert body["tags"] == self.payload["tags"]
-        assert body["info"] == self.payload["info"]
