@@ -57,7 +57,7 @@ def test_post_meme(get_valid_token, post_meme, delete_mem, payload):
     token_id = get_valid_token
     meme_id = post_meme.post_meme(token_id, payload)
     post_meme.check_status_code_is_200()
-    post_meme.check_payload_post_meme()
+    post_meme.check_payload_meme()
     delete_mem.delete_mem(meme_id, token_id)
 
 
@@ -67,7 +67,7 @@ def test_put_mem(put_meme, created_and_del_mem, payload=None):
     meme_id, token_id = created_and_del_mem
     put_meme.put_meme(meme_id, token_id, payload)
     put_meme.check_status_code_is_200()
-    put_meme.check_payload_put_meme()
+    put_meme.check_payload_meme(check_id=True)
 
 
 @pytest.mark.skip('Bag - должен отдавать 405, а отдает 400')

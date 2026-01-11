@@ -39,13 +39,3 @@ class MethodPutMeme(MainEndpoint):
             headers=headers,
         )
         return self.response
-
-    def check_payload_put_meme(self):
-        body = self.response.json()
-        print(f'{body["id"]}')
-        print(f'{self.meme_id}')
-        assert body["id"] == self.payload["id"]
-        assert body["text"] == self.payload["text"]
-        assert body["url"] == self.payload["url"]
-        assert body["tags"] == self.payload["tags"]
-        assert body["info"] == self.payload["info"]
