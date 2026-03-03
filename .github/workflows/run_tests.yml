@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       deployment_target:
-        description: 'Choose tests set'
+        description: 'Choose tests sett'
         required: true
         type: choice
         default: 'smoke'
