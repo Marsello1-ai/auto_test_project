@@ -23,7 +23,7 @@ jobs:
 	    runs-on:
 	    name:
 	    steps:
-		    - name:
+			- name:
 		    uses: actions/checkout@v4
 		    - name: Set up Python enviroment
 		    uses: actions/setip-python@v4
@@ -53,7 +53,7 @@ jobs:
 					distribution: 'microsoft'
 					java-version: '17'
 			- name: Install Allure
-			run: sudo wget https://github.com/allure-framework/allure2/releases...
+			run: sudo wget https://github.com/allure-framework/allure2/releases/dowload/2.24.0.tgz && sudo tar -zxvf allure-2.24.0.tgz -C /opt/ && sudo ln -s /opt/allure-2.24.0/bin/allure /usr/bin/allure
 			- name: Generate report - 
 			run: allure generate -с allure-results -o site
 			- name: Save allure report - 
