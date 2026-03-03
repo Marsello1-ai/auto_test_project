@@ -55,7 +55,10 @@ jobs:
           java-version: '17'
       
       - name: Install Allure
-        run: sudo wget https://github.com/allure-framework/allure2/releases/dowload/2.24.0.tgz && sudo tar -zxvf allure-2.24.0.tgz -C /opt/ && sudo ln -s /opt/allure-2.24.0/bin/allure /usr/bin/
+        run: |
+          wget https://github.com/allure-framework/allure2/releases/download/2.24.0/allure-2.24.0.tgz
+          tar -zxvf allure-2.24.0.tgz -C /opt/
+          echo "/opt/allure-2.24.0/bin" >> $GITHUB_PATH
       
       - name: Generate Allure report
         run: allure generate --clean allure-results -o _site
