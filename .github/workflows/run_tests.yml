@@ -1,1 +1,99 @@
+name: Python autotests
 
+on:
+  workflow_dispatch:
+    inputs:
+      deployment_target:
+        description: 'Choose tests set'
+        required: true
+        type: choice
+        default: 'smoke'
+        options:
+          - smoke
+          - regression
+          - extended
+          - all
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    name: Run tests suite
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Set up Python environment
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.13'
+      
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+        
+      - name: Run tests
+        run: |
+          ALLURE_DIR="allure-results"
+          mkdir -p $ALLURE_DIR
+          
+          if [ "${{ github.event.inputs.deployment_target }}" == "all" ]; then
+            pytest --alluredir=$ALLURE_DIR
+          elif [ "${{ github.event.inputs.deployment_target }}" == "smoke" ]; then
+            pytest -m smoke --alluredir=$ALLURE_DIR
+          elif [ "${{ github.event.inputs.deployment_target }}" == "regression" ]; then
+            pytest -m regression --alluredir=$ALLURE_DIR
+          elif [ "${{ github.event.inputs.deployment_target }}" == "extended" ]; then
+            pytest -m extended --alluredir=$ALLURE_DIR
+          fi
+        continue-on-error: true
+      
+      - name: Install Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'microsoft'
+          java-version: '17'
+      
+      - name: Install Allure
+        run: |
+          wget https://github.com/allure-framework/allure2/releases/download/2.24.0/allure-2.24.0.tgz
+          tar -zxvf allure-2.24.0.tgz -C /opt/
+          echo "/opt/allure-2.24.0/bin" >> $GITHUB_PATH
+      
+      - name: Generate Allure report
+        run: allure generate --clean allure-results -o _site
+      
+      - name: Upload Allure report
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report
+          path: _site
+          retention-days: 1
+
+  publish-report:
+    name: Deploy Report to Pages
+    runs-on: ubuntu-latest
+    needs: run-tests
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: allure-report
+      
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: allure-report
+      
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
