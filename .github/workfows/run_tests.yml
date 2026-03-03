@@ -1,1 +1,76 @@
+name: Python autotests
 
+on: workflow_dispatch:
+	inputs:
+		deployement_target:
+			description: chose tests set
+			rquired: true
+			type: choice
+			default: smoke
+			options:
+			- smoke
+			- regression
+			- extended
+			- all
+permissons:
+contents: read
+pages: write
+id-token: write
+	
+
+jobs:
+    run tests:
+	    runs-on:
+	    name:
+	    steps:
+		    - name:
+		    uses: actions/checkout@v4
+		    - name: Set up Python enviroment
+		    uses: actions/setip-python@v4
+		    with:
+			    python-vetsion: '3.10'
+			- name: Install dependencies
+			run: pip install -r requirements.txt
+			- name: run all tests
+			if: "github.event.inputs.deployment_target == 'all'"
+			run: pytest  --alluredir=allure-results
+			continue-on-error: true
+			- name: run smoke tests
+			if: "github.event.inputs.deployment_target == 'smoke'"
+			run: pytest -m smoke
+			continue-on-error: true
+			- name: run regression tests
+			if: "github.event.inputs.deployment_target == 'regression'"
+			run: pytest -m regression
+			continue-on-error: true
+			- name: run extended tests
+			if: "github.event.inputs.deployment_target == 'extended'"
+			run: pytest -m extended
+			continue-on-error: true
+			- name: Install Java
+			uses: actions/setup-java@3
+				with:
+					distribution: 'microsoft'
+					java-version: '17'
+			- name: Install Allure
+			run: sudo wget https://github.com/allure-framework/allure2/releases...
+			- name: Generate report - 
+			run: allure generate -с allure-results -o site
+			- name: Save allure report - 
+			uses: action/upload-artifact@v3
+				with:
+					name: site
+					path: site
+					retention-days: 1
+		publish-report:
+			name: Report public
+			runs-on: ubuntu-latest
+			needs: run-tests
+			steps:
+				- name: Download arifact
+				uses: actions/download-artifact@v3
+				- name: Upload Pages arifact
+				uses: actions/upload-pages-arifact@v2
+				- name: Deploy to GitHub Pages
+				id: deployment
+				uses: actions/deploy-pages@v1.2.9
