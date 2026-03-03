@@ -35,7 +35,6 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
         
-      # ✅ ИСПРАВЛЕНЫ ОТСТУПЫ! (было хаос, стало порядок)
       - name: run all tests
         if: "github.event.inputs.deployment_target == 'all'"
         run: pytest  --alluredir=allure-results
