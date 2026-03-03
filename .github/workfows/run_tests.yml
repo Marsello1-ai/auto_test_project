@@ -35,7 +35,6 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
         
-      # ✅ Best practice: используй одну команду pytest с параметрами
       - name: Run tests
         run: |
           if [ "${{ github.event.inputs.deployment_target }}" == "all" ]; then
