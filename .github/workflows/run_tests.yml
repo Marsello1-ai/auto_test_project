@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       deployment_target:
-        description: 'Choose tests sett'
+        description: 'Choose tests set'
         required: true
         type: choice
         default: 'smoke'
@@ -30,29 +30,34 @@ jobs:
       - name: Set up Python environment
         uses: actions/setup-python@v4
         with:
-          python-version: '3.13'
+          python-version: '3.17'
       
       - name: Install dependencies
         run: pip install -r requirements.txt
         
-      - name: Run tests
-        run: |
-          ALLURE_DIR="allure-results"
-          mkdir -p $ALLURE_DIR
-          
-          if [ "${{ github.event.inputs.deployment_target }}" == "all" ]; then
-            pytest --alluredir=$ALLURE_DIR
-          elif [ "${{ github.event.inputs.deployment_target }}" == "smoke" ]; then
-            pytest -m smoke --alluredir=$ALLURE_DIR
-          elif [ "${{ github.event.inputs.deployment_target }}" == "regression" ]; then
-            pytest -m regression --alluredir=$ALLURE_DIR
-          elif [ "${{ github.event.inputs.deployment_target }}" == "extended" ]; then
-            pytest -m extended --alluredir=$ALLURE_DIR
-          fi
+      # ✅ ИСПРАВЛЕНЫ ОТСТУПЫ! (было хаос, стало порядок)
+      - name: run all tests
+        if: "github.event.inputs.deployment_target == 'all'"
+        run: pytest  --alluredir=allure-results
+        continue-on-error: true
+      
+      - name: run smoke tests
+        if: "github.event.inputs.deployment_target == 'smoke'"
+        run: pytest -m smoke
+        continue-on-error: true
+      
+      - name: run regression tests
+        if: "github.event.inputs.deployment_target == 'regression'"
+        run: pytest -m regression
+        continue-on-error: true
+      
+      - name: run extended tests
+        if: "github.event.inputs.deployment_target == 'extended'"
+        run: pytest -m extended
         continue-on-error: true
       
       - name: Install Java
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v3
         with:
           distribution: 'microsoft'
           java-version: '17'
@@ -64,14 +69,14 @@ jobs:
           echo "/opt/allure-2.24.0/bin" >> $GITHUB_PATH
       
       - name: Generate Allure report
-        run: allure generate --clean allure-results -o _site
+        run: allure generate --clean allure-results -o site
       
       - name: Upload Allure report
         uses: actions/upload-artifact@v4
         with:
           name: allure-report
-          path: _site
-          retention-days: 1
+          path: site
+          retention-days: 30
 
   publish-report:
     name: Deploy Report to Pages
