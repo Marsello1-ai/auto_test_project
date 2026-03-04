@@ -36,17 +36,17 @@ jobs:
         
       - name: run all tests
         if: "github.event.inputs.deployment_target == 'all'"
-        run: pytest  --alluredir=allure-results
+        run: pytest --alluredir=allure-results
         continue-on-error: true
       
       - name: run negative tests
         if: "github.event.inputs.deployment_target == 'negative'"
-        run: pytest -m negative
+        run: pytest -m negative --alluredir=allure-results
         continue-on-error: true
       
       - name: run regression happy_path
         if: "github.event.inputs.deployment_target == 'happy_path'"
-        run: pytest -m happy_path
+        run: pytest -m happy_path --alluredir=allure-results
         continue-on-error: true
       
       - name: Install Java
@@ -75,6 +75,9 @@ jobs:
     name: Deploy Report to Pages
     runs-on: ubuntu-latest
     needs: run-tests
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
