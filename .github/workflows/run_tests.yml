@@ -7,11 +7,10 @@ on:
         description: 'Choose tests set'
         required: true
         type: choice
-        default: 'smoke'
+        default: 'all'
         options:
-          - smoke
-          - regression
-          - extended
+          - negative
+          - happy_path
           - all
 
 permissions:
@@ -40,19 +39,14 @@ jobs:
         run: pytest  --alluredir=allure-results
         continue-on-error: true
       
-      - name: run smoke tests
-        if: "github.event.inputs.deployment_target == 'smoke'"
-        run: pytest -m smoke
+      - name: run negative tests
+        if: "github.event.inputs.deployment_target == 'negative'"
+        run: pytest -m negative
         continue-on-error: true
       
-      - name: run regression tests
-        if: "github.event.inputs.deployment_target == 'regression'"
-        run: pytest -m regression
-        continue-on-error: true
-      
-      - name: run extended tests
-        if: "github.event.inputs.deployment_target == 'extended'"
-        run: pytest -m extended
+      - name: run regression happy_path
+        if: "github.event.inputs.deployment_target == 'happy_path'"
+        run: pytest -m happy_path
         continue-on-error: true
       
       - name: Install Java
